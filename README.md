@@ -13,4 +13,5 @@ py .\main.py -file ".\path\to\exam.html"
 
 ## Roadmap
 
-- [ ] Get the first question too
+- [x] Get the first question too
+- [x] Fix the answer to allow multiple answers (`<div class="voting-summary`)

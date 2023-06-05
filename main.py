@@ -28,11 +28,13 @@ with open(file, "r", encoding="utf-8") as HTMLFile:
         if line.find("<div class=\"card-header text-white bg-primary\">") >= 0:
             currentTitleI = i
             questionI += 1
-        if i == currentTitleI + 1 and questionI > 0:
+        if i == currentTitleI + 1 and questionI >= 0:
             title = line.strip().replace("#", "")
-        if i == currentTitleI + 3 and questionI > 0:
+            print(title)
+        if i == currentTitleI + 3 and questionI >= 0:
             title = line.strip() + " | " + title
             title = " ".join([word.rjust(2, "0") for word in title.split(" ") if word != "|"])
+            print(title)
             questions[title] = {
                 "options": [],
                 "body": [],
@@ -56,13 +58,19 @@ with open(file, "r", encoding="utf-8") as HTMLFile:
         if i == currentOptionI + 6 and title in questions:
             questions[title]["options"].append(line.strip())
 
-        if line.find("<script id=") >= 0 and title in questions:
-            questions[title]["answer"] = line[line.find('", "vote_count"') - 1]
+        # Change to find in "<div class="voting-summary" and also save percentage
+        # <div class="vote-bar progress-bar bg-primary"
+        if line.find("<div class=\"vote-bar progress-bar bg-primary\"") >= 0 and title in questions:
+            ans_start = line.find(">", line.find("<div class=\"vote-bar progress-bar bg-primary\""))
+            ans = line[ans_start + 1: line.find(" ", ans_start)]
+            questions[title]["answer"] = ans
 
         if line.find("<span class=\"correct-answer\"><img") >= 0:
             src = line.split('/')[2].split('"')[0]
             questions[title]["options"].append(f"<img>/{file_title}/img/{src}<img>")
             
+    # for key in questions.keys():
+    #     print(key)
 
     for question_title in questions:
         question_formatted = {
@@ -71,7 +79,7 @@ with open(file, "r", encoding="utf-8") as HTMLFile:
             "options": questions[question_title]["options"],
             "answer": questions[question_title]["answer"]
         }
-        json_file = f"./{file_title.replace(' ', '_')}/{question_title.replace(' | ', '_').replace(' ', '_')}.json"
+        json_file = f"./results/{file_title.replace(' ', '_')}/{question_title.replace(' | ', '_').replace(' ', '_')}.json"
         print(json_file)
         with open(json_file, "w") as end_file:
             json.dump(question_formatted, end_file)
