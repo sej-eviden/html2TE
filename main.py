@@ -33,7 +33,7 @@ with open(file, "r", encoding="utf-8") as HTMLFile:
             print(title)
         if i == currentTitleI + 3 and questionI >= 0:
             title = line.strip() + " | " + title
-            title = " ".join([word.rjust(2, "0") for word in title.split(" ") if word != "|"])
+            title = " ".join([word.rjust(3, "0") for word in title.split(" ") if word != "|"])
             print(title)
             questions[title] = {
                 "options": [],
@@ -52,6 +52,10 @@ with open(file, "r", encoding="utf-8") as HTMLFile:
                     p = f"<img>/{file_title}/img/{src}<img>"
                 questions[title]["body"].append(p.strip())
             # questions[title]["body"] =
+        if line.find("<span class=\"inquestion-subtitle mb-0 mt-3\">Question</span>") >= 0:
+            questions[title]["body"].append("Question:")
+            currentBodyI = i
+            
 
         if line.find("<li class=\"multi-choice-item") >= 0:
             currentOptionI = i
