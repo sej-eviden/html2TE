@@ -85,7 +85,7 @@ def mm(file):
             }
             
 
-            json_file = f"./results/{file_title.replace(' ', '_')}/{question_title.replace(' | ', '_').replace(' ', '_')}.json"
+            json_file = f"./results/{file_title.replace(' Exam Practice Questions', '').replace(' - Associate', '').replace(' ', '_')}/{question_title.replace(' | ', '_').replace(' ', '_')}.json"
             print(json_file)
             with open(json_file, "w") as end_file:
                 json.dump(question_formatted, end_file)
@@ -94,8 +94,9 @@ result_exams = os.listdir("./results/")
 todo_exams = os.listdir("./exams/")
 
 for exam in todo_exams:
-    if f"Microsoft_{exam}" not in result_exams:
-        os.makedirs(f"./results/Microsoft_{exam}")
+    print(not any([ex.replace('_', ' ').find(exam) >= 0 for ex in result_exams]))
+    if not any([ex.replace('_', ' ').find(exam) >= 0 for ex in result_exams]):
+        print(exam)
+        os.makedirs(f"./results/{exam.replace(' ', '_') if exam.startswith('Amazon') or exam.startswith('Google') else 'Microsoft_' + exam}")
         html_file = [f for f in os.listdir(f"./exams/{exam}") if f.endswith(".html")][0]
         mm(f"./exams/{exam}/{html_file}")
-
